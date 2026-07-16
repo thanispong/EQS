@@ -1,0 +1,62 @@
+# Dependencies
+**/node_modules/
+
+# Build outputs
+**/dist/
+**/build/
+**/.next/
+**/out/
+
+# Generated Prisma Client
+**/generated/prisma/
+
+# Test coverage
+**/coverage/
+**/.nyc_output/
+
+# Environment variables
+**/.env
+**/.env.*
+!**/.env.example
+
+# Logs
+**/logs/
+**/*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# Temporary files
+**/.temp/
+**/.tmp/
+**/*.tmp
+**/*.cache
+
+# Runtime files
+**/pids/
+**/*.pid
+**/*.seed
+**/*.pid.lock
+
+# IDEs and editors
+.idea/
+.vscode/
+*.sublime-workspace
+*.launch
+.settings/
+.project
+.classpath
+.c9/
+
+# OS files
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Diagnostic reports
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
+
+# TypeScript build cache
+**/*.tsbuildinfo
