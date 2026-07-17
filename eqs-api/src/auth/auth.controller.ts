@@ -16,6 +16,9 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 import type { AuthenticatedRequest } from './interfaces/authenticated-request.interface';
 import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { Roles } from './decorators/roles.decorator';
+import { Role } from './enums/role.enum';
+import { RolesGuard } from './guards/roles.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -74,6 +77,15 @@ export class AuthController {
 
     return {
       message: 'Logout successful',
+    };
+  }
+
+  @Get('admin-test')
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles(Role.Admin)
+  adminTest() {
+    return {
+      message: 'Admin access granted',
     };
   }
 }

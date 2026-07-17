@@ -10,6 +10,9 @@ export class UsersService {
       where: {
         email,
       },
+      include: {
+        role: true,
+      },
     });
   }
 

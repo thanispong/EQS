@@ -17,7 +17,7 @@ export class JwtAuthGuard implements CanActivate {
       Request & {
         user?: {
           userId: number;
-          roleId: number;
+          role: string;
         };
       }
     >();
@@ -29,12 +29,11 @@ export class JwtAuthGuard implements CanActivate {
     }
 
     try {
-      const payload =
-        await this.jwtService.verifyAsync<JwtPayload>(token);
+      const payload = await this.jwtService.verifyAsync<JwtPayload>(token);
 
       request.user = {
         userId: payload.sub,
-        roleId: payload.roleId,
+        role: payload.role,
       };
 
       return true;
