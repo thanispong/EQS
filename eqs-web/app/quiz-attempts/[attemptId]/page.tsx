@@ -1,0 +1,291 @@
+'use client';
+
+import { useEffect, useMemo, useState } from 'react';
+import { useParams, useRouter } from 'next/navigation';
+import AppNavbar from '@/components/app-navbar';
+import AuthGuard from '@/components/auth-guard';
+import { apiFetch } from '@/lib/api';
+import type {
+  StartAttemptResponse,
+} from '@/types/quiz';
+
+interface SubmitResult {
+  attemptId: number;
+  quizId: number;
+  quizTitle: string;
+  score: number;
+  totalScore: number;
+  correctCount: number;
+  wrongCount: number;
+  percentage: number;
+  passingPercentage: number;
+  isPassed: boolean;
+  submittedAt: string;
+}
+
+export default function QuizAttemptPage() {
+  const params = useParams<{ attemptId: string }>();
+  const router = useRouter();
+
+  const attemptId = Number(params.attemptId);
+
+  const [attemptData, setAttemptData] =
+    useState<StartAttemptResponse | null>(null);
+
+  const [answers, setAnswers] = useState<
+    Record<number, number>
+  >({});
+
+  const [isSubmitting, setIsSubmitting] =
+    useState(false);
+
+  const [errorMessage, setErrorMessage] =
+    useState('');
+
+  useEffect(() => {
+    const storedData = sessionStorage.getItem(
+      `quiz-attempt-${attemptId}`,
+    );
+
+    if (!storedData) {
+      router.replace('/quizzes');
+      return;
+    }
+
+    try {
+      setAttemptData(
+        JSON.parse(storedData) as StartAttemptResponse,
+      );
+    } catch {
+      sessionStorage.removeItem(
+        `quiz-attempt-${attemptId}`,
+      );
+      router.replace('/quizzes');
+    }
+  }, [attemptId, router]);
+
+  const answeredCount = useMemo(
+    () => Object.keys(answers).length,
+    [answers],
+  );
+
+  function handleSelectAnswer(
+    questionId: number,
+    choiceId: number,
+  ) {
+    setAnswers((currentAnswers) => ({
+      ...currentAnswers,
+      [questionId]: choiceId,
+    }));
+  }
+
+  async function handleSubmit() {
+    if (!attemptData) {
+      return;
+    }
+
+    const unansweredCount =
+      attemptData.quiz.questions.length -
+      answeredCount;
+
+    const shouldSubmit =
+      unansweredCount === 0 ||
+      window.confirm(
+        `You still have ${unansweredCount} unanswered question(s). Submit anyway?`,
+      );
+
+    if (!shouldSubmit) {
+      return;
+    }
+
+    setIsSubmitting(true);
+    setErrorMessage('');
+
+    try {
+      const result = await apiFetch<SubmitResult>(
+        `/quiz-attempts/${attemptId}/submit`,
+        {
+          method: 'POST',
+          body: JSON.stringify({
+            answers: Object.entries(answers).map(
+              ([questionId, selectedChoiceId]) => ({
+                questionId: Number(questionId),
+                selectedChoiceId,
+              }),
+            ),
+          }),
+        },
+      );
+
+      sessionStorage.removeItem(
+        `quiz-attempt-${attemptId}`,
+      );
+
+      sessionStorage.setItem(
+        `quiz-result-${attemptId}`,
+        JSON.stringify(result),
+      );
+
+      router.replace(
+        `/quiz-attempts/${attemptId}/result`,
+      );
+    } catch (error) {
+      setErrorMessage(
+        error instanceof Error
+          ? error.message
+          : 'Unable to submit quiz',
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  }
+
+  if (!attemptData) {
+    return (
+      <AuthGuard allowedRoles={['student']}>
+        <main className="flex min-h-screen items-center justify-center bg-base-200">
+          <span className="loading loading-spinner loading-lg" />
+        </main>
+      </AuthGuard>
+    );
+  }
+
+  return (
+    <AuthGuard allowedRoles={['student']}>
+      <div className="min-h-screen bg-base-200">
+        <AppNavbar title="Education Quiz System" />
+
+        <main className="mx-auto max-w-4xl p-6">
+          <div className="mb-6 card border border-base-300 bg-base-100 shadow">
+            <div className="card-body">
+              <h1 className="text-3xl font-bold">
+                {attemptData.quiz.title}
+              </h1>
+
+              <div className="flex flex-wrap gap-3">
+                <span className="badge badge-outline">
+                  {attemptData.quiz.questions.length}{' '}
+                  questions
+                </span>
+
+                <span className="badge badge-outline">
+                  {attemptData.quiz.timeLimitMinutes
+                    ? `${attemptData.quiz.timeLimitMinutes} minutes`
+                    : 'No time limit'}
+                </span>
+
+                <span className="badge badge-outline">
+                  Answered {answeredCount}/
+                  {attemptData.quiz.questions.length}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {errorMessage && (
+            <div
+              role="alert"
+              className="alert alert-error mb-6"
+            >
+              <span>{errorMessage}</span>
+            </div>
+          )}
+
+          <div className="space-y-6">
+            {attemptData.quiz.questions.map(
+              (question, questionIndex) => (
+                <section
+                  key={question.id}
+                  className="card border border-base-300 bg-base-100 shadow"
+                >
+                  <div className="card-body">
+                    <div className="flex items-start gap-3">
+                      <span className="badge badge-primary badge-lg">
+                        {questionIndex + 1}
+                      </span>
+
+                      <div>
+                        <h2 className="text-lg font-bold">
+                          {question.questionText}
+                        </h2>
+
+                        <p className="mt-1 text-sm text-base-content/60">
+                          {Number(question.score)} point(s)
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-4 space-y-3">
+                      {question.choices.map(
+                        (choice, choiceIndex) => (
+                          <label
+                            key={choice.id}
+                            className="flex cursor-pointer items-center gap-3 rounded-box border border-base-300 p-4 transition hover:bg-base-200"
+                          >
+                            <input
+                              type="radio"
+                              name={`question-${question.id}`}
+                              value={choice.id}
+                              checked={
+                                answers[question.id] ===
+                                choice.id
+                              }
+                              onChange={() =>
+                                handleSelectAnswer(
+                                  question.id,
+                                  choice.id,
+                                )
+                              }
+                              className="radio radio-primary"
+                            />
+
+                            <span className="font-medium">
+                              {String.fromCharCode(
+                                65 + choiceIndex,
+                              )}
+                              .
+                            </span>
+
+                            <span>
+                              {choice.choiceText}
+                            </span>
+                          </label>
+                        ),
+                      )}
+                    </div>
+                  </div>
+                </section>
+              ),
+            )}
+          </div>
+
+          <div className="sticky bottom-4 mt-8">
+            <div className="card border border-base-300 bg-base-100 shadow-xl">
+              <div className="card-body flex-row items-center justify-between">
+                <span>
+                  Answered {answeredCount} of{' '}
+                  {attemptData.quiz.questions.length}
+                </span>
+
+                <button
+                  type="button"
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="btn btn-primary"
+                >
+                  {isSubmitting && (
+                    <span className="loading loading-spinner loading-sm" />
+                  )}
+
+                  {isSubmitting
+                    ? 'Submitting...'
+                    : 'Submit Quiz'}
+                </button>
+              </div>
+            </div>
+          </div>
+        </main>
+      </div>
+    </AuthGuard>
+  );
+}

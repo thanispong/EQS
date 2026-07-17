@@ -1,9 +1,10 @@
 'use client';
 
-import { ReactNode, useEffect, useState } from 'react';
+import type { ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
-import type { AuthUser } from '@/types/auth';
+import type { ProfileResponse } from '@/types/auth';
 
 interface AuthGuardProps {
   children: ReactNode;
@@ -16,29 +17,36 @@ export default function AuthGuard({
 }: AuthGuardProps) {
   const router = useRouter();
 
-  const [user, setUser] = useState<AuthUser | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+
+  const allowedRolesKey = allowedRoles?.join(',') ?? '';
 
   useEffect(() => {
     async function checkAuthentication() {
       try {
         const profile =
-          await apiFetch<AuthUser>('/auth/profile');
+          await apiFetch<ProfileResponse>('/auth/profile');
+
+        const roleName = profile.role.name;
+        const roles = allowedRolesKey
+          ? allowedRolesKey.split(',')
+          : [];
 
         if (
-          allowedRoles &&
-          !allowedRoles.includes(profile.role.name)
+          roles.length > 0 &&
+          !roles.includes(roleName)
         ) {
-          if (profile.role.name === 'admin') {
-            router.replace('/admin');
-          } else {
-            router.replace('/quizzes');
-          }
+          router.replace(
+            roleName === 'admin'
+              ? '/admin'
+              : '/quizzes',
+          );
 
           return;
         }
 
-        setUser(profile);
+        setIsAuthorized(true);
       } catch {
         router.replace('/login');
       } finally {
@@ -47,23 +55,17 @@ export default function AuthGuard({
     }
 
     void checkAuthentication();
-  }, [allowedRoles, router]);
+  }, [allowedRolesKey, router]);
 
   if (isChecking) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-base-200">
-        <div className="flex items-center gap-3">
-          <span className="loading loading-spinner loading-lg" />
-
-          <span className="text-lg">
-            Checking session...
-          </span>
-        </div>
+        <span className="loading loading-spinner loading-lg" />
       </main>
     );
   }
 
-  if (!user) {
+  if (!isAuthorized) {
     return null;
   }
 
