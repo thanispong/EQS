@@ -556,4 +556,118 @@ export class QuizAttemptsService {
       },
     };
   }
+
+  async findActiveAttempt(
+    attemptId: number,
+    userId: number,
+  ) {
+    const attempt =
+      await this.prisma.quizAttempt.findUnique({
+        where: {
+          id: attemptId,
+        },
+        select: {
+          id: true,
+          quizId: true,
+          userId: true,
+          startedAt: true,
+          status: true,
+          quiz: {
+            select: {
+              id: true,
+              title: true,
+              description: true,
+              timeLimitMinutes: true,
+              isActive: true,
+              questions: {
+                where: {
+                  isActive: true,
+                },
+                orderBy: [
+                  {
+                    sortOrder: 'asc',
+                  },
+                  {
+                    id: 'asc',
+                  },
+                ],
+                select: {
+                  id: true,
+                  questionText: true,
+                  score: true,
+                  sortOrder: true,
+                  choices: {
+                    where: {
+                      isActive: true,
+                    },
+                    orderBy: [
+                      {
+                        sortOrder: 'asc',
+                      },
+                      {
+                        id: 'asc',
+                      },
+                    ],
+                    select: {
+                      id: true,
+                      choiceText: true,
+                      sortOrder: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      });
+
+    if (!attempt) {
+      throw new NotFoundException(
+        'Quiz attempt not found',
+      );
+    }
+
+    if (attempt.userId !== userId) {
+      throw new ForbiddenException(
+        'You cannot access another user attempt',
+      );
+    }
+
+    if (attempt.status !== 'in_progress') {
+      throw new ConflictException(
+        'Quiz attempt is no longer active',
+      );
+    }
+
+    if (!attempt.quiz.isActive) {
+      throw new BadRequestException(
+        'Quiz is no longer active',
+      );
+    }
+
+    const totalScore =
+      attempt.quiz.questions.reduce(
+        (total, question) =>
+          total + Number(question.score),
+        0,
+      );
+
+    return {
+      attempt: {
+        id: attempt.id,
+        quizId: attempt.quizId,
+        startedAt: attempt.startedAt,
+        status: attempt.status,
+      },
+      quiz: {
+        id: attempt.quiz.id,
+        title: attempt.quiz.title,
+        description: attempt.quiz.description,
+        timeLimitMinutes:
+          attempt.quiz.timeLimitMinutes,
+        totalScore,
+        questions: attempt.quiz.questions,
+      },
+    };
+  }
 }

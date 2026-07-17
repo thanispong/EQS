@@ -43,35 +43,45 @@ export default function QuizAttemptPage() {
     useState('');
 
   useEffect(() => {
-  async function loadAttemptData() {
-    const storedData = sessionStorage.getItem(
-      `quiz-attempt-${attemptId}`,
-    );
+    async function loadAttemptData() {
+      const storageKey =
+        `quiz-attempt-${attemptId}`;
 
-    if (!storedData) {
-      router.replace('/quizzes');
-      return;
+      const storedData =
+        sessionStorage.getItem(storageKey);
+
+      if (storedData) {
+        try {
+          const parsedData = JSON.parse(
+            storedData,
+          ) as StartAttemptResponse;
+
+          await Promise.resolve();
+          setAttemptData(parsedData);
+          return;
+        } catch {
+          sessionStorage.removeItem(storageKey);
+        }
+      }
+
+      try {
+        const result =
+          await apiFetch<StartAttemptResponse>(
+            `/quiz-attempts/${attemptId}`,
+          );
+
+        sessionStorage.setItem(
+          storageKey,
+          JSON.stringify(result),
+        );
+
+        setAttemptData(result);
+      } catch {
+        router.replace('/quizzes');
+      }
     }
 
-    try {
-      const parsedData = JSON.parse(
-        storedData,
-      ) as StartAttemptResponse;
-
-      // ทำให้การเปลี่ยน state ไม่เกิด synchronously ใน effect โดยตรง
-      await Promise.resolve();
-
-      setAttemptData(parsedData);
-    } catch {
-      sessionStorage.removeItem(
-        `quiz-attempt-${attemptId}`,
-      );
-
-      router.replace('/quizzes');
-    }
-  }
-
-  void loadAttemptData();
+    void loadAttemptData();
   }, [attemptId, router]);
 
   const answeredCount = useMemo(

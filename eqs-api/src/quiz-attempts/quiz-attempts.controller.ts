@@ -59,6 +59,18 @@ export class QuizAttemptsController {
     );
   }
 
+  @Get(':attemptId')
+  findActiveAttempt(
+    @Param('attemptId', ParseIntPipe)
+    attemptId: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.quizAttemptsService.findActiveAttempt(
+      attemptId,
+      request.user.userId,
+    );
+  }
+
   @Get(':attemptId/result')
   findResult(
     @Param('attemptId', ParseIntPipe)
