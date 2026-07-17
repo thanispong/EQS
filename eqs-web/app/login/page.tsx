@@ -1,9 +1,10 @@
 'use client';
 
-import { FormEvent, useState } from 'react';
+import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
-import type { LoginResponse } from '@/types/auth';
+import type { LoginResponse, AuthUser } from '@/types/auth';
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -33,7 +34,7 @@ export default function LoginPage() {
         },
       );
 
-      if (result.user.role.name === 'admin') {
+      if (result.user.role === 'admin') {
         router.push('/admin');
       } else {
         router.push('/quizzes');
@@ -50,6 +51,25 @@ export default function LoginPage() {
       setIsLoading(false);
     }
   }
+
+  useEffect(() => {
+    async function redirectAuthenticatedUser() {
+      try {
+        const profile =
+          await apiFetch<AuthUser>('/auth/profile');
+
+        if (profile.role === 'admin') {
+          router.replace('/admin');
+        } else {
+          router.replace('/quizzes');
+        }
+      } catch {
+        // ผู้ใช้ยังไม่ได้ Login ให้อยู่หน้า Login ต่อ
+      }
+    }
+
+    void redirectAuthenticatedUser();
+  }, [router]);
 
   return (
     <main className="hero min-h-screen bg-base-200 px-4">
