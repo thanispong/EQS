@@ -52,78 +52,82 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex min-h-screen items-center justify-center bg-gray-100 px-4">
-      <div className="w-full max-w-md rounded-xl bg-white p-8 shadow-md">
-        <h1 className="mb-2 text-2xl font-bold text-gray-900">
-          Education Quiz System
-        </h1>
+    <main className="hero min-h-screen bg-base-200 px-4">
+      <div className="hero-content w-full max-w-md">
+        <div className="card w-full border-2 border-base-300 bg-base-100 shadow-xl">
+          <div className="card-body">
+            <div className="mb-4 text-center">
+              <h1 className="text-3xl font-bold">
+                Education Quiz System
+              </h1>
 
-        <p className="mb-6 text-sm text-gray-500">
-          Sign in to continue
-        </p>
+              <p className="mt-2 text-base-content/70">
+                Sign in to continue
+              </p>
+            </div>
 
-        <form
-          onSubmit={handleSubmit}
-          className="space-y-4"
-        >
-          <div>
-            <label
-              htmlFor="email"
-              className="mb-1 block text-sm font-medium text-gray-700"
+            <form
+              onSubmit={handleSubmit}
+              className="space-y-4"
             >
-              Email
-            </label>
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">
+                  Email
+                </legend>
 
-            <input
-              id="email"
-              type="email"
-              value={email}
-              onChange={(event) =>
-                setEmail(event.target.value)
-              }
-              required
-              autoComplete="email"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:border-blue-500"
-            />
+                <input
+                  id="email"
+                  type="email"
+                  value={email}
+                  onChange={(event) =>
+                    setEmail(event.target.value)
+                  }
+                  required
+                  autoComplete="email"
+                  placeholder="student@example.com"
+                  className="input input-bordered w-full"
+                />
+              </fieldset>
+
+              <fieldset className="fieldset">
+                <legend className="fieldset-legend">
+                  Password
+                </legend>
+
+                <input
+                  id="password"
+                  type="password"
+                  value={password}
+                  onChange={(event) =>
+                    setPassword(event.target.value)
+                  }
+                  required
+                  autoComplete="current-password"
+                  placeholder="Enter your password"
+                  className="input input-bordered w-full"
+                />
+              </fieldset>
+
+              {errorMessage && (
+                <div role="alert" className="alert alert-error">
+                  <span>{errorMessage}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={isLoading}
+                className="btn btn-primary w-full"
+              >
+                {isLoading && (
+                  <span className="loading loading-spinner loading-sm" />
+                )}
+
+                {isLoading ? 'Signing in...' : 'Sign in'}
+              </button>
+            </form>
           </div>
-
-          <div>
-            <label
-              htmlFor="password"
-              className="mb-1 block text-sm font-medium text-gray-700"
-            >
-              Password
-            </label>
-
-            <input
-              id="password"
-              type="password"
-              value={password}
-              onChange={(event) =>
-                setPassword(event.target.value)
-              }
-              required
-              autoComplete="current-password"
-              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-gray-900 outline-none focus:border-blue-500"
-            />
-          </div>
-
-          {errorMessage && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-600">
-              {errorMessage}
-            </p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full rounded-lg bg-blue-600 px-4 py-2 font-medium text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-60"
-          >
-            {isLoading
-              ? 'Signing in...'
-              : 'Sign in'}
-          </button>
-        </form>
+        </div>
       </div>
     </main>
   );
