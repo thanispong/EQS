@@ -68,7 +68,7 @@ export class AuthService {
 
     const accessToken = await this.jwtService.signAsync({
       sub: user.id,
-      role: user.roleId,
+      roleID: user.roleId,
     });
 
     return {
@@ -80,5 +80,15 @@ export class AuthService {
         isActive: user.isActive,
       },
     };
+  }
+
+  async getProfile(userId: number) {
+    const user = await this.usersService.findById(userId);
+
+    if (!user || !user.isActive) {
+      throw new UnauthorizedException('User account is unavailable');
+    }
+
+    return user;
   }
 }

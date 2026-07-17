@@ -3,7 +3,7 @@ import { PrismaService } from '../prisma/prisma.service';
 
 @Injectable()
 export class UsersService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(private readonly prisma: PrismaService) { }
 
   findByEmail(email: string) {
     return this.prisma.user.findUnique({
@@ -33,6 +33,27 @@ export class UsersService {
         passwordHash: data.passwordHash,
         displayName: data.displayName,
         roleId: data.roleId,
+      },
+      select: {
+        id: true,
+        email: true,
+        displayName: true,
+        isActive: true,
+        createdAt: true,
+        role: {
+          select: {
+            id: true,
+            name: true,
+          },
+        },
+      },
+    });
+  }
+
+  findById(id: number) {
+    return this.prisma.user.findUnique({
+      where: {
+        id,
       },
       select: {
         id: true,
