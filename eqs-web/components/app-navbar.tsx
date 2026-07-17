@@ -1,17 +1,21 @@
 'use client';
 
+import Link from 'next/link';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 
 interface AppNavbarProps {
   title: string;
+  showStudentMenu?: boolean;
 }
 
 export default function AppNavbar({
   title,
+  showStudentMenu = false,
 }: AppNavbarProps) {
   const router = useRouter();
+
   const [isLoggingOut, setIsLoggingOut] =
     useState(false);
 
@@ -35,12 +39,30 @@ export default function AppNavbar({
   return (
     <header className="navbar border-b border-base-300 bg-base-100 px-4 shadow-sm">
       <div className="flex-1">
-        <span className="text-xl font-bold">
+        <Link href="/quizzes" className="text-xl font-bold">
           {title}
-        </span>
+        </Link>
       </div>
 
-      <div className="flex-none">
+      <div className="flex items-center gap-2">
+        {showStudentMenu && (
+          <>
+            <Link
+              href="/quizzes"
+              className="btn btn-ghost btn-sm"
+            >
+              Quizzes
+            </Link>
+
+            <Link
+              href="/history"
+              className="btn btn-ghost btn-sm"
+            >
+              History
+            </Link>
+          </>
+        )}
+
         <button
           type="button"
           onClick={handleLogout}

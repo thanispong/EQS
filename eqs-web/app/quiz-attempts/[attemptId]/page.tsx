@@ -43,6 +43,7 @@ export default function QuizAttemptPage() {
     useState('');
 
   useEffect(() => {
+  async function loadAttemptData() {
     const storedData = sessionStorage.getItem(
       `quiz-attempt-${attemptId}`,
     );
@@ -53,15 +54,24 @@ export default function QuizAttemptPage() {
     }
 
     try {
-      setAttemptData(
-        JSON.parse(storedData) as StartAttemptResponse,
-      );
+      const parsedData = JSON.parse(
+        storedData,
+      ) as StartAttemptResponse;
+
+      // ทำให้การเปลี่ยน state ไม่เกิด synchronously ใน effect โดยตรง
+      await Promise.resolve();
+
+      setAttemptData(parsedData);
     } catch {
       sessionStorage.removeItem(
         `quiz-attempt-${attemptId}`,
       );
+
       router.replace('/quizzes');
     }
+  }
+
+  void loadAttemptData();
   }, [attemptId, router]);
 
   const answeredCount = useMemo(
@@ -153,7 +163,10 @@ export default function QuizAttemptPage() {
   return (
     <AuthGuard allowedRoles={['student']}>
       <div className="min-h-screen bg-base-200">
-        <AppNavbar title="Education Quiz System" />
+        <AppNavbar
+          title="Education Quiz System"
+          showStudentMenu
+        />
 
         <main className="mx-auto max-w-4xl p-6">
           <div className="mb-6 card border border-base-300 bg-base-100 shadow">

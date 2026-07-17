@@ -3,7 +3,7 @@
 import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
-import type { LoginResponse, AuthUser } from '@/types/auth';
+import type { LoginResponse, ProfileResponse } from '@/types/auth';
 
 
 export default function LoginPage() {
@@ -56,9 +56,9 @@ export default function LoginPage() {
     async function redirectAuthenticatedUser() {
       try {
         const profile =
-          await apiFetch<AuthUser>('/auth/profile');
+          await apiFetch<ProfileResponse>('/auth/profile');
 
-        if (profile.role === 'admin') {
+        if (profile.role.name === 'admin') {
           router.replace('/admin');
         } else {
           router.replace('/quizzes');

@@ -83,7 +83,10 @@ export default function QuizResultPage() {
   return (
     <AuthGuard allowedRoles={['student']}>
       <div className="min-h-screen bg-base-200">
-        <AppNavbar title="Education Quiz System" />
+        <AppNavbar
+          title="Education Quiz System"
+          showStudentMenu
+        />
 
         <main className="mx-auto max-w-3xl p-6">
           {isLoading ? (
