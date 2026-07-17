@@ -1,4 +1,4 @@
 export enum QuizStatus {
-  Draft = 'DRAFT',
-  Published = 'PUBLISHED',
+  Draft = 'draft',
+  Published = 'published',
 }
