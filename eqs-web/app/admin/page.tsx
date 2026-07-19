@@ -8,7 +8,7 @@ export default function AdminPage() {
   return (
     <AuthGuard allowedRoles={['admin']}>
       <div className="min-h-screen bg-base-200">
-        <AppNavbar title="EQS Admin" />
+        <AppNavbar title="EQS Admin" sticky />
 
         <main className="mx-auto max-w-7xl p-6">
           <div className="card border border-base-300 bg-base-100 shadow-md">

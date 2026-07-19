@@ -279,12 +279,12 @@ export default function AdminQuizzesPage() {
   return (
     <AuthGuard allowedRoles={['admin']}>
       <div className="min-h-screen bg-base-200">
-        <AppNavbar title="EQS Admin" />
+        <AppNavbar title="EQS Admin" sticky />
 
-        <main className="mx-auto max-w-7xl p-6">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:p-6">
+          <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <div>
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-2xl font-bold sm:text-3xl">
                 Quiz Management
               </h1>
 
@@ -313,9 +313,9 @@ export default function AdminQuizzesPage() {
             </div>
           )}
 
-          <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
+          <div className="grid gap-4 sm:gap-6 lg:grid-cols-[400px_1fr]">
             <section className="card min-w-0 h-fit border border-base-300 bg-base-100 shadow">
-              <div className="card-body min-w-0">
+              <div className="card-body min-w-0 p-4 sm:p-6">
                 <h2 className="card-title">
                   {editingQuiz
                     ? 'Edit quiz'
@@ -403,7 +403,7 @@ export default function AdminQuizzesPage() {
                     />
                   </fieldset>
 
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                     <fieldset className="fieldset">
                       <legend className="fieldset-legend">
                         Passing %
@@ -516,8 +516,8 @@ export default function AdminQuizzesPage() {
               </div>
             </section>
 
-            <section className="card border border-base-300 bg-base-100 shadow">
-              <div className="card-body">
+            <section className="card min-w-0 border border-base-300 bg-base-100 shadow">
+              <div className="card-body min-w-0 p-4 sm:p-6">
                 <h2 className="card-title">
                   Quizzes
                 </h2>
@@ -531,8 +531,8 @@ export default function AdminQuizzesPage() {
                     No quizzes found
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="table">
+                  <div className="max-w-full overflow-x-auto">
+                    <table className="table min-w-[760px]">
                       <thead>
                         <tr>
                           <th>Quiz</th>

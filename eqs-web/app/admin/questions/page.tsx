@@ -438,12 +438,12 @@ export default function AdminQuestionsPage() {
   return (
     <AuthGuard allowedRoles={['admin']}>
       <div className="min-h-screen bg-base-200">
-        <AppNavbar title="EQS Admin" />
+        <AppNavbar title="EQS Admin" sticky />
 
-        <main className="mx-auto max-w-7xl p-6">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:p-6">
+          <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <div>
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-2xl font-bold sm:text-3xl">
                 Question Management
               </h1>
 
@@ -480,7 +480,7 @@ export default function AdminQuestionsPage() {
           )}
 
           <section className="card mb-6 min-w-0 border border-base-300 bg-base-100 shadow">
-            <div className="card-body min-w-0">
+            <div className="card-body min-w-0 p-4 sm:p-6">
               <fieldset className="fieldset min-w-0">
                 <legend className="fieldset-legend">
                   Select quiz
@@ -533,9 +533,9 @@ export default function AdminQuestionsPage() {
             </div>
           </section>
 
-          <div className="grid gap-6 lg:grid-cols-[430px_1fr]">
-            <section className="card h-fit border border-base-300 bg-base-100 shadow">
-              <div className="card-body">
+          <div className="grid gap-4 sm:gap-6 lg:grid-cols-[430px_1fr]">
+            <section className="card h-fit min-w-0 border border-base-300 bg-base-100 shadow">
+              <div className="card-body min-w-0 p-4 sm:p-6">
                 <h2 className="card-title">
                   {editingQuestion
                     ? 'Edit question'
@@ -550,7 +550,7 @@ export default function AdminQuestionsPage() {
                 ) : (
                   <form
                     onSubmit={handleSubmit}
-                    className="space-y-4"
+                    className="min-w-0 space-y-4"
                   >
                     <fieldset className="fieldset">
                       <legend className="fieldset-legend">
@@ -589,8 +589,8 @@ export default function AdminQuestionsPage() {
                       />
                     </fieldset>
 
-                    <div className="grid grid-cols-2 gap-3">
-                      <fieldset className="fieldset">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                      <fieldset className="fieldset min-w-0">
                         <legend className="fieldset-legend">
                           Score
                         </legend>
@@ -610,7 +610,7 @@ export default function AdminQuestionsPage() {
                         />
                       </fieldset>
 
-                      <fieldset className="fieldset">
+                      <fieldset className="fieldset min-w-0">
                         <legend className="fieldset-legend">
                           Sort order
                         </legend>
@@ -652,7 +652,7 @@ export default function AdminQuestionsPage() {
                               key={index}
                               className="rounded-box border border-base-300 p-3"
                             >
-                              <div className="flex items-center gap-2">
+                              <div className="flex flex-wrap items-center gap-2 sm:flex-nowrap">
                                 <input
                                   type="radio"
                                   name="correct-choice"
@@ -680,7 +680,7 @@ export default function AdminQuestionsPage() {
                                     )
                                   }
                                   required
-                                  className="input input-bordered flex-1"
+                                  className="input input-bordered min-w-0 flex-[1_1_10rem]"
                                   placeholder={`Choice ${index + 1}`}
                                 />
 
@@ -691,7 +691,7 @@ export default function AdminQuestionsPage() {
                                       index,
                                     )
                                   }
-                                  className="btn btn-error btn-outline btn-sm"
+                                  className="btn btn-error btn-outline btn-sm w-full sm:w-auto"
                                 >
                                   Remove
                                 </button>
@@ -708,7 +708,7 @@ export default function AdminQuestionsPage() {
                       </div>
                     </div>
 
-                    <div className="flex gap-2">
+                    <div className="flex flex-col gap-2 sm:flex-row">
                       <button
                         type="submit"
                         disabled={isSaving}
@@ -739,7 +739,7 @@ export default function AdminQuestionsPage() {
               </div>
             </section>
 
-            <section className="space-y-4">
+            <section className="min-w-0 space-y-4">
               {isLoading ? (
                 <div className="card border border-base-300 bg-base-100 shadow">
                   <div className="card-body min-h-52 items-center justify-center">
@@ -764,15 +764,15 @@ export default function AdminQuestionsPage() {
                     key={question.id}
                     className="card border border-base-300 bg-base-100 shadow"
                   >
-                    <div className="card-body">
-                      <div className="flex flex-wrap items-start justify-between gap-3">
-                        <div className="flex gap-3">
+                    <div className="card-body min-w-0 p-4 sm:p-6">
+                      <div className="flex flex-col items-start justify-between gap-3 sm:flex-row">
+                        <div className="flex min-w-0 gap-3">
                           <span className="badge badge-primary badge-lg">
                             {index + 1}
                           </span>
 
-                          <div>
-                            <h2 className="font-bold">
+                          <div className="min-w-0">
+                            <h2 className="break-words font-bold">
                               {question.questionText}
                             </h2>
 
@@ -785,7 +785,7 @@ export default function AdminQuestionsPage() {
                           </div>
                         </div>
 
-                        <div className="flex gap-2">
+                        <div className="flex flex-wrap gap-2 sm:justify-end">
                           <button
                             type="button"
                             onClick={() =>
@@ -820,7 +820,7 @@ export default function AdminQuestionsPage() {
                                 choice.id ??
                                 choiceIndex
                               }
-                              className={`rounded-box border p-3 ${
+                              className={`break-words rounded-box border p-3 ${
                                 choice.isCorrect
                                   ? 'border-success bg-success/10'
                                   : 'border-base-300'
@@ -846,7 +846,7 @@ export default function AdminQuestionsPage() {
                       </div>
 
                       {question.explanation && (
-                        <div className="mt-3 rounded-box bg-base-200 p-3 text-sm">
+                        <div className="mt-3 break-words rounded-box bg-base-200 p-3 text-sm">
                           <strong>Explanation:</strong>{' '}
                           {question.explanation}
                         </div>

@@ -181,12 +181,12 @@ export default function AdminSubjectsPage() {
   return (
     <AuthGuard allowedRoles={['admin']}>
       <div className="min-h-screen bg-base-200">
-        <AppNavbar title="EQS Admin" />
+        <AppNavbar title="EQS Admin" sticky />
 
-        <main className="mx-auto max-w-7xl p-6">
-          <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:p-6">
+          <div className="mb-6 flex flex-col items-start justify-between gap-3 sm:flex-row sm:items-center">
             <div>
-              <h1 className="text-3xl font-bold">
+              <h1 className="text-2xl font-bold sm:text-3xl">
                 Subject Management
               </h1>
 
@@ -221,9 +221,9 @@ export default function AdminSubjectsPage() {
             </div>
           )}
 
-          <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-            <section className="card h-fit border border-base-300 bg-base-100 shadow">
-              <div className="card-body">
+          <div className="grid gap-4 sm:gap-6 lg:grid-cols-[360px_1fr]">
+            <section className="card h-fit min-w-0 border border-base-300 bg-base-100 shadow">
+              <div className="card-body min-w-0 p-4 sm:p-6">
                 <h2 className="card-title">
                   {editingSubject
                     ? 'Edit subject'
@@ -232,7 +232,7 @@ export default function AdminSubjectsPage() {
 
                 <form
                   onSubmit={handleSubmit}
-                  className="space-y-4"
+                  className="min-w-0 space-y-4"
                 >
                   <fieldset className="fieldset">
                     <legend className="fieldset-legend">
@@ -300,8 +300,8 @@ export default function AdminSubjectsPage() {
               </div>
             </section>
 
-            <section className="card border border-base-300 bg-base-100 shadow">
-              <div className="card-body">
+            <section className="card min-w-0 border border-base-300 bg-base-100 shadow">
+              <div className="card-body min-w-0 p-4 sm:p-6">
                 <h2 className="card-title">
                   Subjects
                 </h2>
@@ -315,8 +315,8 @@ export default function AdminSubjectsPage() {
                     No subjects found
                   </div>
                 ) : (
-                  <div className="overflow-x-auto">
-                    <table className="table">
+                  <div className="max-w-full overflow-x-auto">
+                    <table className="table min-w-[680px]">
                       <thead>
                         <tr>
                           <th>Name</th>

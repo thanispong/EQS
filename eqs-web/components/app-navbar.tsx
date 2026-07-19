@@ -8,11 +8,13 @@ import { apiFetch } from '@/lib/api';
 interface AppNavbarProps {
   title: string;
   showStudentMenu?: boolean;
+  sticky?: boolean;
 }
 
 export default function AppNavbar({
   title,
   showStudentMenu = false,
+  sticky = false,
 }: AppNavbarProps) {
   const router = useRouter();
 
@@ -37,7 +39,11 @@ export default function AppNavbar({
   }
 
   return (
-    <header className="navbar border-b border-base-300 bg-base-100 px-4 shadow-sm">
+    <header
+      className={`navbar border-b border-base-300 bg-base-100 px-4 shadow-sm ${
+        sticky ? 'sticky top-0 z-50' : ''
+      }`}
+    >
       <div className="flex-1">
         <Link href="/quizzes" className="text-xl font-bold">
           {title}
