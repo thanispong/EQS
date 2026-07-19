@@ -49,6 +49,13 @@ export default function AdminQuizzesPage() {
   const [successMessage, setSuccessMessage] =
     useState('');
 
+  const selectedTopic = topics.find(
+    (topic) => String(topic.id) === topicId,
+  );
+  const selectedTopicName = selectedTopic
+    ? `${selectedTopic.subject.name} — ${selectedTopic.name}`
+    : 'Select topic';
+
   async function loadQuizzes() {
     setIsLoading(true);
     setErrorMessage('');
@@ -307,8 +314,8 @@ export default function AdminQuizzesPage() {
           )}
 
           <div className="grid gap-6 lg:grid-cols-[400px_1fr]">
-            <section className="card h-fit border border-base-300 bg-base-100 shadow">
-              <div className="card-body">
+            <section className="card min-w-0 h-fit border border-base-300 bg-base-100 shadow">
+              <div className="card-body min-w-0">
                 <h2 className="card-title">
                   {editingQuiz
                     ? 'Edit quiz'
@@ -317,35 +324,48 @@ export default function AdminQuizzesPage() {
 
                 <form
                   onSubmit={handleSubmit}
-                  className="space-y-4"
+                  className="min-w-0 space-y-4"
                 >
-                  <fieldset className="fieldset">
+                  <fieldset className="fieldset min-w-0">
                     <legend className="fieldset-legend">
                       Topic
                     </legend>
 
-                    <select
-                      value={topicId}
-                      onChange={(event) =>
-                        setTopicId(event.target.value)
-                      }
-                      required
-                      className="select select-bordered w-full"
-                    >
-                      <option value="">
-                        Select topic
-                      </option>
-
-                      {topics.map((topic) => (
-                        <option
-                          key={topic.id}
-                          value={topic.id}
-                        >
-                          {topic.subject.name} —{' '}
-                          {topic.name}
+                    <div className="relative min-w-0 max-w-full">
+                      <select
+                        value={topicId}
+                        onChange={(event) =>
+                          setTopicId(event.target.value)
+                        }
+                        required
+                        aria-label="Topic"
+                        className="select select-bordered w-full min-w-0 max-w-full text-transparent [&>option]:text-base-content"
+                      >
+                        <option value="">
+                          Select topic
                         </option>
-                      ))}
-                    </select>
+
+                        {topics.map((topic) => (
+                          <option
+                            key={topic.id}
+                            value={topic.id}
+                          >
+                            {topic.subject.name} —{' '}
+                            {topic.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      <span
+                        aria-hidden="true"
+                        title={selectedTopicName}
+                        className="pointer-events-none absolute inset-y-0 left-4 right-10 flex min-w-0 items-center"
+                      >
+                        <span className="block min-w-0 truncate">
+                          {selectedTopicName}
+                        </span>
+                      </span>
+                    </div>
                   </fieldset>
 
                   <fieldset className="fieldset">

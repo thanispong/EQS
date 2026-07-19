@@ -38,6 +38,11 @@ export default function AdminTopicsPage() {
   const [successMessage, setSuccessMessage] =
     useState('');
 
+  const selectedSubjectName =
+    subjects.find(
+      (subject) => String(subject.id) === subjectId,
+    )?.name ?? 'Select subject';
+
   async function loadTopics() {
     setIsLoading(true);
     setErrorMessage('');
@@ -252,8 +257,8 @@ export default function AdminTopicsPage() {
           )}
 
           <div className="grid gap-6 lg:grid-cols-[360px_1fr]">
-            <section className="card h-fit border border-base-300 bg-base-100 shadow">
-              <div className="card-body">
+            <section className="card min-w-0 h-fit border border-base-300 bg-base-100 shadow">
+              <div className="card-body min-w-0">
                 <h2 className="card-title">
                   {editingTopic
                     ? 'Edit topic'
@@ -262,36 +267,49 @@ export default function AdminTopicsPage() {
 
                 <form
                   onSubmit={handleSubmit}
-                  className="space-y-4"
+                  className="min-w-0 space-y-4"
                 >
-                  <fieldset className="fieldset">
+                  <fieldset className="fieldset min-w-0">
                     <legend className="fieldset-legend">
                       Subject
                     </legend>
 
-                    <select
-                      value={subjectId}
-                      onChange={(event) =>
-                        setSubjectId(
-                          event.target.value,
-                        )
-                      }
-                      required
-                      className="select select-bordered w-full"
-                    >
-                      <option value="">
-                        Select subject
-                      </option>
-
-                      {subjects.map((subject) => (
-                        <option
-                          key={subject.id}
-                          value={subject.id}
-                        >
-                          {subject.name}
+                    <div className="relative min-w-0 max-w-full">
+                      <select
+                        value={subjectId}
+                        onChange={(event) =>
+                          setSubjectId(
+                            event.target.value,
+                          )
+                        }
+                        required
+                        aria-label="Subject"
+                        className="select select-bordered w-full min-w-0 max-w-full text-transparent [&>option]:text-base-content"
+                      >
+                        <option value="">
+                          Select subject
                         </option>
-                      ))}
-                    </select>
+
+                        {subjects.map((subject) => (
+                          <option
+                            key={subject.id}
+                            value={subject.id}
+                          >
+                            {subject.name}
+                          </option>
+                        ))}
+                      </select>
+
+                      <span
+                        aria-hidden="true"
+                        title={selectedSubjectName}
+                        className="pointer-events-none absolute inset-y-0 left-4 right-10 flex min-w-0 items-center"
+                      >
+                        <span className="block min-w-0 truncate">
+                          {selectedSubjectName}
+                        </span>
+                      </span>
+                    </div>
                   </fieldset>
 
                   <fieldset className="fieldset">

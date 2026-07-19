@@ -76,6 +76,10 @@ export default function AdminQuestionsPage() {
     [quizzes, selectedQuizId],
   );
 
+  const selectedQuizName = selectedQuiz
+    ? `${selectedQuiz.topic.subject.name} — ${selectedQuiz.topic.name} — ${selectedQuiz.title}`
+    : 'Select quiz';
+
   async function loadQuestions(quizId: number) {
     setIsLoading(true);
     setErrorMessage('');
@@ -475,36 +479,50 @@ export default function AdminQuestionsPage() {
             </div>
           )}
 
-          <section className="card mb-6 border border-base-300 bg-base-100 shadow">
-            <div className="card-body">
-              <fieldset className="fieldset">
+          <section className="card mb-6 min-w-0 border border-base-300 bg-base-100 shadow">
+            <div className="card-body min-w-0">
+              <fieldset className="fieldset min-w-0">
                 <legend className="fieldset-legend">
                   Select quiz
                 </legend>
 
-                <select
-                  value={selectedQuizId}
-                  onChange={(event) =>
-                    void handleQuizChange(
-                      event.target.value,
-                    )
-                  }
-                  className="select select-bordered w-full max-w-xl"
-                >
-                  <option value="">
-                    Select quiz
-                  </option>
-
-                  {quizzes.map((quiz) => (
-                    <option
-                      key={quiz.id}
-                      value={quiz.id}
-                    >
-                      {quiz.topic.subject.name} —{' '}
-                      {quiz.topic.name} — {quiz.title}
+                <div className="relative w-full min-w-0 max-w-xl">
+                  <select
+                    value={selectedQuizId}
+                    onChange={(event) =>
+                      void handleQuizChange(
+                        event.target.value,
+                      )
+                    }
+                    aria-label="Select quiz"
+                    className="select select-bordered w-full min-w-0 max-w-full text-transparent [&>option]:text-base-content"
+                  >
+                    <option value="">
+                      Select quiz
                     </option>
-                  ))}
-                </select>
+
+                    {quizzes.map((quiz) => (
+                      <option
+                        key={quiz.id}
+                        value={quiz.id}
+                      >
+                        {quiz.topic.subject.name} —{' '}
+                        {quiz.topic.name} —{' '}
+                        {quiz.title}
+                      </option>
+                    ))}
+                  </select>
+
+                  <span
+                    aria-hidden="true"
+                    title={selectedQuizName}
+                    className="pointer-events-none absolute inset-y-0 left-4 right-10 flex min-w-0 items-center"
+                  >
+                    <span className="block min-w-0 truncate">
+                      {selectedQuizName}
+                    </span>
+                  </span>
+                </div>
               </fieldset>
 
               {selectedQuiz && (
