@@ -37,9 +37,7 @@ export class QuizzesService {
     });
 
     if (duplicateQuiz) {
-      throw new ConflictException(
-        'Quiz title already exists in this topic',
-      );
+      throw new ConflictException('Quiz title already exists in this topic');
     }
 
     return this.prisma.quiz.create({
@@ -197,11 +195,7 @@ export class QuizzesService {
     return quiz;
   }
 
-  async update(
-    id: number,
-    updateQuizDto: UpdateQuizDto,
-    userId: number,
-  ) {
+  async update(id: number, updateQuizDto: UpdateQuizDto, userId: number) {
     const quiz = await this.prisma.quiz.findUnique({
       where: {
         id,
@@ -231,10 +225,7 @@ export class QuizzesService {
       }
     }
 
-    if (
-      nextTopicId !== quiz.topicId ||
-      nextTitle !== quiz.title
-    ) {
+    if (nextTopicId !== quiz.topicId || nextTitle !== quiz.title) {
       const duplicateQuiz = await this.prisma.quiz.findFirst({
         where: {
           topicId: nextTopicId,
@@ -246,9 +237,7 @@ export class QuizzesService {
       });
 
       if (duplicateQuiz) {
-        throw new ConflictException(
-          'Quiz title already exists in this topic',
-        );
+        throw new ConflictException('Quiz title already exists in this topic');
       }
     }
 

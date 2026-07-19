@@ -50,10 +50,7 @@ export class QuizzesController {
     @Body() createQuizDto: CreateQuizDto,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.quizzesService.create(
-      createQuizDto,
-      request.user.userId,
-    );
+    return this.quizzesService.create(createQuizDto, request.user.userId);
   }
 
   @Patch(':id')
@@ -64,11 +61,7 @@ export class QuizzesController {
     @Body() updateQuizDto: UpdateQuizDto,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.quizzesService.update(
-      id,
-      updateQuizDto,
-      request.user.userId,
-    );
+    return this.quizzesService.update(id, updateQuizDto, request.user.userId);
   }
 
   @Delete(':id')
@@ -78,9 +71,6 @@ export class QuizzesController {
     @Param('id', ParseIntPipe) id: number,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.quizzesService.remove(
-      id,
-      request.user.userId,
-    );
+    return this.quizzesService.remove(id, request.user.userId);
   }
 }

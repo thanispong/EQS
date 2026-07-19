@@ -41,10 +41,7 @@ export class SubjectsController {
     @Body() createSubjectDto: CreateSubjectDto,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.subjectsService.create(
-      createSubjectDto,
-      request.user.userId,
-    );
+    return this.subjectsService.create(createSubjectDto, request.user.userId);
   }
 
   @Patch(':id')

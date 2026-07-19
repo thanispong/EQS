@@ -20,19 +20,14 @@ import { QuizAttemptsService } from './quiz-attempts.service';
 @UseGuards(JwtAuthGuard, RolesGuard)
 @Roles(Role.Student)
 export class QuizAttemptsController {
-  constructor(
-    private readonly quizAttemptsService: QuizAttemptsService,
-  ) {}
+  constructor(private readonly quizAttemptsService: QuizAttemptsService) {}
 
   @Post('quizzes/:quizId/start')
   start(
     @Param('quizId', ParseIntPipe) quizId: number,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.quizAttemptsService.start(
-      quizId,
-      request.user.userId,
-    );
+    return this.quizAttemptsService.start(quizId, request.user.userId);
   }
 
   @Post(':attemptId/submit')
@@ -51,12 +46,8 @@ export class QuizAttemptsController {
   }
 
   @Get('my-history')
-  findMyHistory(
-    @Req() request: AuthenticatedRequest,
-  ) {
-    return this.quizAttemptsService.findMyHistory(
-      request.user.userId,
-    );
+  findMyHistory(@Req() request: AuthenticatedRequest) {
+    return this.quizAttemptsService.findMyHistory(request.user.userId);
   }
 
   @Get(':attemptId')
@@ -77,9 +68,6 @@ export class QuizAttemptsController {
     attemptId: number,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.quizAttemptsService.findResult(
-      attemptId,
-      request.user.userId,
-    );
+    return this.quizAttemptsService.findResult(attemptId, request.user.userId);
   }
 }

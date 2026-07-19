@@ -17,6 +17,7 @@ import type {
   QuestionChoicePayload,
   UpdateQuestionPayload,
 } from '@/types/admin-question';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 function createEmptyChoices(): QuestionChoicePayload[] {
   return [
@@ -87,9 +88,10 @@ export default function AdminQuestionsPage() {
       setQuestions(result);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to load questions',
+        getErrorMessage(
+          error,
+          'Unable to load questions',
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -117,9 +119,10 @@ export default function AdminQuestionsPage() {
         }
       } catch (error) {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load page data',
+          getErrorMessage(
+            error,
+            'Unable to load page data',
+          ),
         );
       } finally {
         setIsLoading(false);
@@ -375,9 +378,10 @@ export default function AdminQuestionsPage() {
       resetForm();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save question',
+        getErrorMessage(
+          error,
+          'Unable to save question',
+        ),
       );
     } finally {
       setIsSaving(false);
@@ -419,9 +423,10 @@ export default function AdminQuestionsPage() {
       }
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to deactivate question',
+        getErrorMessage(
+          error,
+          'Unable to deactivate question',
+        ),
       );
     }
   }

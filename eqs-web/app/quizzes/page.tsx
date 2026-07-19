@@ -6,6 +6,7 @@ import AppNavbar from "@/components/app-navbar";
 import AuthGuard from "@/components/auth-guard";
 import { apiFetch } from "@/lib/api";
 import type { QuizItem, StartAttemptResponse } from "@/types/quiz";
+import { getErrorMessage } from "@/lib/get-error-message";
 
 export default function QuizzesPage() {
   const router = useRouter();
@@ -25,7 +26,10 @@ export default function QuizzesPage() {
         );
       } catch (error) {
         setErrorMessage(
-          error instanceof Error ? error.message : "Unable to load quizzes",
+          getErrorMessage(
+            error,
+            'Unable to load quizzes',
+          ),
         );
       } finally {
         setIsLoading(false);

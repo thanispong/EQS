@@ -35,9 +35,7 @@ export class TopicsService {
     });
 
     if (existingTopic) {
-      throw new ConflictException(
-        'Topic name already exists in this subject',
-      );
+      throw new ConflictException('Topic name already exists in this subject');
     }
 
     return this.prisma.topic.create({
@@ -162,11 +160,7 @@ export class TopicsService {
     return topic;
   }
 
-  async update(
-    id: number,
-    updateTopicDto: UpdateTopicDto,
-    userId: number,
-  ) {
+  async update(id: number, updateTopicDto: UpdateTopicDto, userId: number) {
     const topic = await this.prisma.topic.findUnique({
       where: {
         id,
@@ -194,10 +188,7 @@ export class TopicsService {
 
     const nextName = updateTopicDto.name?.trim() ?? topic.name;
 
-    if (
-      nextSubjectId !== topic.subjectId ||
-      nextName !== topic.name
-    ) {
+    if (nextSubjectId !== topic.subjectId || nextName !== topic.name) {
       const duplicateTopic = await this.prisma.topic.findUnique({
         where: {
           subjectId_name: {

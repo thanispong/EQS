@@ -6,6 +6,7 @@ import AppNavbar from '@/components/app-navbar';
 import AuthGuard from '@/components/auth-guard';
 import { apiFetch } from '@/lib/api';
 import type { QuizHistoryItem } from '@/types/quiz-history';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 export default function HistoryPage() {
   const router = useRouter();
@@ -28,9 +29,10 @@ export default function HistoryPage() {
         setHistory(result);
       } catch (error) {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load quiz history',
+          getErrorMessage(
+            error,
+            'Unable to load quiz history',
+          ),
         );
       } finally {
         setIsLoading(false);

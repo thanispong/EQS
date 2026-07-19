@@ -1,13 +1,26 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-if (!API_URL) {
-  throw new Error('NEXT_PUBLIC_API_URL is not configured');
-}
+const API_URL =
+  process.env.NEXT_PUBLIC_API_URL ??
+  'http://localhost:3000';
 
 interface ApiErrorResponse {
   message?: string | string[];
   error?: string;
   statusCode?: number;
+}
+
+function getApiErrorMessage(
+  errorData: ApiErrorResponse | null,
+  fallbackMessage: string,
+) {
+  if (!errorData?.message) {
+    return fallbackMessage;
+  }
+
+  if (Array.isArray(errorData.message)) {
+    return errorData.message.join(', ');
+  }
+
+  return errorData.message;
 }
 
 export async function apiFetch<T>(
@@ -27,16 +40,20 @@ export async function apiFetch<T>(
     let errorData: ApiErrorResponse | null = null;
 
     try {
-      errorData = (await response.json()) as ApiErrorResponse;
+      errorData =
+        (await response.json()) as ApiErrorResponse;
     } catch {
-      errorData = null;
+      // Response อาจไม่มี JSON body
     }
 
-    const message = Array.isArray(errorData?.message)
-      ? errorData.message.join(', ')
-      : errorData?.message || 'Something went wrong';
+    const fallbackMessage = `Request failed with status ${response.status}`;
 
-    throw new Error(message);
+    throw new Error(
+      getApiErrorMessage(
+        errorData,
+        fallbackMessage,
+      ),
+    );
   }
 
   if (response.status === 204) {

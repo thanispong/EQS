@@ -5,6 +5,7 @@ import { useParams, useRouter } from 'next/navigation';
 import AppNavbar from '@/components/app-navbar';
 import AuthGuard from '@/components/auth-guard';
 import { apiFetch } from '@/lib/api';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 interface QuizResult {
   id?: number;
@@ -68,9 +69,10 @@ export default function QuizResultPage() {
         setResult(apiResult);
       } catch (error) {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load result',
+          getErrorMessage(
+            error,
+            'Unable to load result',
+          ),
         );
       } finally {
         setIsLoading(false);

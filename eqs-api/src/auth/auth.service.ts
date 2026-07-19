@@ -29,9 +29,7 @@ export class AuthService {
     const studentRole = await this.usersService.findRoleByName('student');
 
     if (!studentRole) {
-      throw new InternalServerErrorException(
-        'Student role is not configured',
-      );
+      throw new InternalServerErrorException('Student role is not configured');
     }
 
     const passwordHash = await bcrypt.hash(registerDto.password, 12);

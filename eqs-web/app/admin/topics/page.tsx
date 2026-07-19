@@ -15,6 +15,7 @@ import type {
   Topic,
   UpdateTopicPayload,
 } from '@/types/topic';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 export default function AdminTopicsPage() {
   const [topics, setTopics] = useState<Topic[]>([]);
@@ -48,9 +49,10 @@ export default function AdminTopicsPage() {
       setTopics(result);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to load topics',
+        getErrorMessage(
+          error,
+          'Unable to load topics',
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -70,9 +72,10 @@ export default function AdminTopicsPage() {
         setSubjects(subjectResult);
       } catch (error) {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load page data',
+          getErrorMessage(
+            error,
+            'Unable to load page data',
+          ),
         );
       } finally {
         setIsLoading(false);
@@ -162,9 +165,10 @@ export default function AdminTopicsPage() {
       await loadTopics();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save topic',
+        getErrorMessage(
+          error,
+          'Unable to save topic',
+        ),
       );
     } finally {
       setIsSaving(false);
@@ -195,9 +199,10 @@ export default function AdminTopicsPage() {
       await loadTopics();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to deactivate topic',
+        getErrorMessage(
+          error,
+          'Unable to deactivate topic',
+        ),
       );
     }
   }

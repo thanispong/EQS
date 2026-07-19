@@ -8,6 +8,7 @@ import { apiFetch } from '@/lib/api';
 import type {
   StartAttemptResponse,
 } from '@/types/quiz';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 interface SubmitResult {
   attemptId: number;
@@ -151,9 +152,10 @@ export default function QuizAttemptPage() {
       );
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to submit quiz',
+        getErrorMessage(
+          error,
+          'Unable to submit quiz',
+        ),
       );
     } finally {
       setIsSubmitting(false);

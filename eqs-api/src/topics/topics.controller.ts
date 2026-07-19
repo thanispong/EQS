@@ -50,10 +50,7 @@ export class TopicsController {
     @Body() createTopicDto: CreateTopicDto,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.topicsService.create(
-      createTopicDto,
-      request.user.userId,
-    );
+    return this.topicsService.create(createTopicDto, request.user.userId);
   }
 
   @Patch(':id')
@@ -64,11 +61,7 @@ export class TopicsController {
     @Body() updateTopicDto: UpdateTopicDto,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.topicsService.update(
-      id,
-      updateTopicDto,
-      request.user.userId,
-    );
+    return this.topicsService.update(id, updateTopicDto, request.user.userId);
   }
 
   @Delete(':id')

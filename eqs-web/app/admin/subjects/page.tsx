@@ -10,6 +10,7 @@ import type {
   Subject,
   UpdateSubjectPayload,
 } from '@/types/subject';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 export default function AdminSubjectsPage() {
   const [subjects, setSubjects] = useState<Subject[]>([]);
@@ -136,9 +137,10 @@ export default function AdminSubjectsPage() {
       await loadSubjects();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save subject',
+        getErrorMessage(
+          error,
+          'Unable to save subject',
+        ),
       );
     } finally {
       setIsSaving(false);

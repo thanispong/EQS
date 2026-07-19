@@ -4,6 +4,7 @@ import { FormEvent, useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { apiFetch } from '@/lib/api';
 import type { LoginResponse, ProfileResponse } from '@/types/auth';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 
 export default function LoginPage() {
@@ -28,7 +29,7 @@ export default function LoginPage() {
         {
           method: 'POST',
           body: JSON.stringify({
-            email,
+            email: email.trim().toLowerCase(),
             password,
           }),
         },
@@ -43,9 +44,10 @@ export default function LoginPage() {
       router.refresh();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to login',
+        getErrorMessage(
+          error,
+          'Unable to login',
+        ),
       );
     } finally {
       setIsLoading(false);

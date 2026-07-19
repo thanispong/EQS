@@ -15,6 +15,7 @@ import type {
   CreateQuizPayload,
   UpdateQuizPayload,
 } from '@/types/admin-quiz';
+import { getErrorMessage } from '@/lib/get-error-message';
 
 export default function AdminQuizzesPage() {
   const [quizzes, setQuizzes] = useState<AdminQuiz[]>(
@@ -59,9 +60,10 @@ export default function AdminQuizzesPage() {
       setQuizzes(result);
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to load quizzes',
+        getErrorMessage(
+          error,
+          'Unable to load quizzes',
+        ),
       );
     } finally {
       setIsLoading(false);
@@ -81,9 +83,10 @@ export default function AdminQuizzesPage() {
         setTopics(topicResult);
       } catch (error) {
         setErrorMessage(
-          error instanceof Error
-            ? error.message
-            : 'Unable to load page data',
+          getErrorMessage(
+            error,
+            'Unable to load page data',
+          ),
         );
       } finally {
         setIsLoading(false);
@@ -224,9 +227,10 @@ export default function AdminQuizzesPage() {
       await loadQuizzes();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to save quiz',
+        getErrorMessage(
+          error,
+          'Unable to save quiz',
+        ),
       );
     } finally {
       setIsSaving(false);
@@ -257,9 +261,10 @@ export default function AdminQuizzesPage() {
       await loadQuizzes();
     } catch (error) {
       setErrorMessage(
-        error instanceof Error
-          ? error.message
-          : 'Unable to deactivate quiz',
+        getErrorMessage(
+          error,
+          'Unable to deactivate quiz',
+        ),
       );
     }
   }

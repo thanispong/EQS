@@ -95,11 +95,7 @@ export class SubjectsService {
     return subject;
   }
 
-  async update(
-    id: number,
-    updateSubjectDto: UpdateSubjectDto,
-    userId: number,
-  ) {
+  async update(id: number, updateSubjectDto: UpdateSubjectDto, userId: number) {
     const subject = await this.prisma.subject.findUnique({
       where: {
         id,

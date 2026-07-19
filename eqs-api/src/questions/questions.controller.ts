@@ -23,9 +23,7 @@ import { QuestionsService } from './questions.service';
 @Controller('questions')
 @UseGuards(JwtAuthGuard)
 export class QuestionsController {
-  constructor(
-    private readonly questionsService: QuestionsService,
-  ) {}
+  constructor(private readonly questionsService: QuestionsService) {}
 
   @Get()
   findAll(
@@ -52,10 +50,7 @@ export class QuestionsController {
     @Body() createQuestionDto: CreateQuestionDto,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.questionsService.create(
-      createQuestionDto,
-      request.user.userId,
-    );
+    return this.questionsService.create(createQuestionDto, request.user.userId);
   }
 
   @Patch(':id')
@@ -80,9 +75,6 @@ export class QuestionsController {
     @Param('id', ParseIntPipe) id: number,
     @Req() request: AuthenticatedRequest,
   ) {
-    return this.questionsService.remove(
-      id,
-      request.user.userId,
-    );
+    return this.questionsService.remove(id, request.user.userId);
   }
 }
