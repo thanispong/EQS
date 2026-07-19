@@ -84,13 +84,14 @@ export default function QuizzesPage() {
     <AuthGuard allowedRoles={["student"]}>
       <div className="min-h-screen bg-base-200">
         <AppNavbar
-          title="Education Quiz System"
+          title="Educational Quiz System"
           showStudentMenu
+          sticky
         />
 
-        <main className="mx-auto max-w-7xl p-6">
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:p-6">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold">Available Quizzes</h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">Available Quizzes</h1>
 
             <p className="mt-2 text-base-content/70">Select a quiz to begin.</p>
           </div>
@@ -120,32 +121,32 @@ export default function QuizzesPage() {
               {Object.entries(groupedQuizzes).map(
                 ([subjectName, subjectQuizzes]) => (
                   <section key={subjectName}>
-                    <h2 className="mb-4 text-2xl font-bold">{subjectName}</h2>
+                    <h2 className="mb-4 break-words text-xl font-bold sm:text-2xl">{subjectName}</h2>
 
                     <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                       {subjectQuizzes.map((quiz) => (
                         <article
                           key={quiz.id}
-                          className="card border border-base-300 bg-base-100 shadow-md"
+                          className="card min-w-0 border border-base-300 bg-base-100 shadow-md"
                         >
-                          <div className="card-body">
-                            <div className="flex items-start justify-between gap-4">
-                              <h3 className="card-title">{quiz.title}</h3>
+                          <div className="card-body min-w-0 p-4 sm:p-6">
+                            <div className="flex flex-wrap items-start justify-between gap-3">
+                              <h3 className="card-title min-w-0 flex-1 break-words">{quiz.title}</h3>
 
                               <span className="badge badge-success badge-outline">
                                 Published
                               </span>
                             </div>
 
-                            <p className="text-sm text-base-content/60">
+                            <p className="break-words text-sm text-base-content/60">
                               {quiz.topic.name}
                             </p>
 
-                            <p className="min-h-12 text-base-content/80">
+                            <p className="break-words text-base-content/80 sm:min-h-12">
                               {quiz.description || "No description"}
                             </p>
 
-                            <div className="mt-2 grid grid-cols-2 gap-3 text-sm">
+                            <div className="mt-2 grid grid-cols-1 gap-3 text-sm sm:grid-cols-2">
                               <div className="rounded-box bg-base-200 p-3">
                                 <div className="text-base-content/60">
                                   Passing score
@@ -194,7 +195,7 @@ export default function QuizzesPage() {
                                 type="button"
                                 onClick={() => handleStartQuiz(quiz.id)}
                                 disabled={startingQuizId !== null}
-                                className="btn btn-primary"
+                                className="btn btn-primary w-full sm:w-auto"
                               >
                                 {startingQuizId === quiz.id && (
                                   <span className="loading loading-spinner loading-sm" />

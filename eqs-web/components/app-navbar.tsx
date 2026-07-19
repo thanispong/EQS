@@ -40,17 +40,26 @@ export default function AppNavbar({
 
   return (
     <header
-      className={`navbar border-b border-base-300 bg-base-100 px-4 shadow-sm ${
+      className={`navbar flex-wrap gap-2 border-b border-base-300 bg-base-100 px-3 py-2 shadow-sm sm:px-4 ${
         sticky ? 'sticky top-0 z-50' : ''
       }`}
     >
-      <div className="flex-1">
-        <Link href="/quizzes" className="text-xl font-bold">
+      <div className="min-w-0 flex-1">
+        <Link
+          href="/quizzes"
+          className="block truncate text-lg font-bold sm:text-xl"
+        >
           {title}
         </Link>
       </div>
 
-      <div className="flex items-center gap-2">
+      <div
+        className={`flex items-center gap-1 sm:gap-2 ${
+          showStudentMenu
+            ? 'w-full justify-end sm:w-auto'
+            : ''
+        }`}
+      >
         {showStudentMenu && (
           <>
             <Link

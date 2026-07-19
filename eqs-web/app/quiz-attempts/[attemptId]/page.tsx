@@ -176,14 +176,15 @@ export default function QuizAttemptPage() {
     <AuthGuard allowedRoles={['student']}>
       <div className="min-h-screen bg-base-200">
         <AppNavbar
-          title="Education Quiz System"
+          title="Educational Quiz System"
           showStudentMenu
+          sticky
         />
 
-        <main className="mx-auto max-w-4xl p-6">
+        <main className="mx-auto max-w-4xl px-4 py-6 sm:p-6">
           <div className="mb-6 card border border-base-300 bg-base-100 shadow">
-            <div className="card-body">
-              <h1 className="text-3xl font-bold">
+            <div className="card-body min-w-0 p-4 sm:p-6">
+              <h1 className="break-words text-2xl font-bold sm:text-3xl">
                 {attemptData.quiz.title}
               </h1>
 
@@ -221,16 +222,16 @@ export default function QuizAttemptPage() {
               (question, questionIndex) => (
                 <section
                   key={question.id}
-                  className="card border border-base-300 bg-base-100 shadow"
+                  className="card min-w-0 border border-base-300 bg-base-100 shadow"
                 >
-                  <div className="card-body">
+                  <div className="card-body min-w-0 p-4 sm:p-6">
                     <div className="flex items-start gap-3">
                       <span className="badge badge-primary badge-lg">
                         {questionIndex + 1}
                       </span>
 
-                      <div>
-                        <h2 className="text-lg font-bold">
+                      <div className="min-w-0">
+                        <h2 className="break-words text-lg font-bold">
                           {question.questionText}
                         </h2>
 
@@ -245,7 +246,7 @@ export default function QuizAttemptPage() {
                         (choice, choiceIndex) => (
                           <label
                             key={choice.id}
-                            className="flex cursor-pointer items-center gap-3 rounded-box border border-base-300 p-4 transition hover:bg-base-200"
+                            className="flex min-w-0 cursor-pointer items-start gap-3 rounded-box border border-base-300 p-3 transition hover:bg-base-200 sm:items-center sm:p-4"
                           >
                             <input
                               type="radio"
@@ -271,7 +272,7 @@ export default function QuizAttemptPage() {
                               .
                             </span>
 
-                            <span>
+                            <span className="min-w-0 break-words">
                               {choice.choiceText}
                             </span>
                           </label>
@@ -286,7 +287,7 @@ export default function QuizAttemptPage() {
 
           <div className="sticky bottom-4 mt-8">
             <div className="card border border-base-300 bg-base-100 shadow-xl">
-              <div className="card-body flex-row items-center justify-between">
+              <div className="card-body flex-col items-stretch justify-between gap-3 p-4 sm:flex-row sm:items-center sm:p-6">
                 <span>
                   Answered {answeredCount} of{' '}
                   {attemptData.quiz.questions.length}
@@ -296,7 +297,7 @@ export default function QuizAttemptPage() {
                   type="button"
                   onClick={handleSubmit}
                   disabled={isSubmitting}
-                  className="btn btn-primary"
+                  className="btn btn-primary w-full sm:w-auto"
                 >
                   {isSubmitting && (
                     <span className="loading loading-spinner loading-sm" />

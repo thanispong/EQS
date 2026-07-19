@@ -80,7 +80,7 @@ export default function LoginPage() {
           <div className="card-body">
             <div className="mb-4 text-center">
               <h1 className="text-3xl font-bold">
-                Education Quiz System
+                Educational Quiz System
               </h1>
 
               <p className="mt-2 text-base-content/70">

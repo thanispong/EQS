@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Education Quiz System',
-  description: 'Online education quiz system',
+  title: 'Educational Quiz System',
+  description: 'Online educational quiz system',
 };
 
 export default function RootLayout({

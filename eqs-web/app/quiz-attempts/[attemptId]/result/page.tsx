@@ -86,11 +86,12 @@ export default function QuizResultPage() {
     <AuthGuard allowedRoles={['student']}>
       <div className="min-h-screen bg-base-200">
         <AppNavbar
-          title="Education Quiz System"
+          title="Educational Quiz System"
           showStudentMenu
+          sticky
         />
 
-        <main className="mx-auto max-w-3xl p-6">
+        <main className="mx-auto max-w-3xl px-4 py-6 sm:p-6">
           {isLoading ? (
             <div className="flex min-h-64 items-center justify-center">
               <span className="loading loading-spinner loading-lg" />
@@ -100,8 +101,8 @@ export default function QuizResultPage() {
               <span>{errorMessage}</span>
             </div>
           ) : result ? (
-            <div className="card border border-base-300 bg-base-100 shadow-xl">
-              <div className="card-body items-center text-center">
+            <div className="card min-w-0 border border-base-300 bg-base-100 shadow-xl">
+              <div className="card-body min-w-0 items-center p-4 text-center sm:p-6">
                 <div
                   className={`badge badge-lg ${
                     result.isPassed
@@ -112,7 +113,7 @@ export default function QuizResultPage() {
                   {result.isPassed ? 'Passed' : 'Failed'}
                 </div>
 
-                <h1 className="mt-4 text-3xl font-bold">
+                <h1 className="mt-4 break-words text-2xl font-bold sm:text-3xl">
                   {result.quiz?.title ||
                     result.quizTitle ||
                     'Quiz Result'}
@@ -184,13 +185,13 @@ export default function QuizResultPage() {
                   </div>
                 </div>
 
-                <div className="card-actions mt-6">
+                <div className="card-actions mt-6 w-full justify-center">
                   <button
                     type="button"
                     onClick={() =>
                       router.push('/quizzes')
                     }
-                    className="btn btn-primary"
+                    className="btn btn-primary w-full sm:w-auto"
                   >
                     Back to Quizzes
                   </button>

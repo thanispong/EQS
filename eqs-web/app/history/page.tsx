@@ -57,13 +57,14 @@ export default function HistoryPage() {
     <AuthGuard allowedRoles={['student']}>
       <div className="min-h-screen bg-base-200">
         <AppNavbar
-          title="Education Quiz System"
+          title="Educational Quiz System"
           showStudentMenu
+          sticky
         />
 
-        <main className="mx-auto max-w-7xl p-6">
+        <main className="mx-auto max-w-7xl px-4 py-6 sm:p-6">
           <div className="mb-6">
-            <h1 className="text-3xl font-bold">
+            <h1 className="text-2xl font-bold sm:text-3xl">
               Quiz History
             </h1>
 
@@ -110,8 +111,109 @@ export default function HistoryPage() {
               </div>
             </div>
           ) : (
-            <div className="overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow">
-              <table className="table">
+            <>
+              <div className="space-y-4 md:hidden">
+                {history.map((attempt) => (
+                  <article
+                    key={attempt.id}
+                    className="card min-w-0 border border-base-300 bg-base-100 shadow"
+                  >
+                    <div className="card-body min-w-0 gap-4 p-4">
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <h2 className="break-words font-bold">
+                            {attempt.quiz.title}
+                          </h2>
+                          <p className="text-xs text-base-content/60">
+                            Attempt #{attempt.id}
+                          </p>
+                        </div>
+
+                        {attempt.status ===
+                        'in_progress' ? (
+                          <span className="badge badge-warning shrink-0 whitespace-nowrap">
+                            In progress
+                          </span>
+                        ) : attempt.isPassed ? (
+                          <span className="badge badge-success shrink-0 whitespace-nowrap">
+                            Passed
+                          </span>
+                        ) : (
+                          <span className="badge badge-error shrink-0 whitespace-nowrap">
+                            Failed
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="min-w-0 text-sm">
+                        <p className="break-words">
+                          {attempt.quiz.topic.subject.name}
+                        </p>
+                        <p className="break-words text-xs text-base-content/60">
+                          {attempt.quiz.topic.name}
+                        </p>
+                      </div>
+
+                      <dl className="grid grid-cols-2 gap-3 text-sm">
+                        <div>
+                          <dt className="text-base-content/60">
+                            Date
+                          </dt>
+                          <dd>
+                            {formatDate(
+                              attempt.submittedAt ??
+                                attempt.startedAt,
+                            )}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-base-content/60">
+                            Score
+                          </dt>
+                          <dd>
+                            {Number(attempt.score)} /{' '}
+                            {Number(attempt.totalScore)}
+                          </dd>
+                        </div>
+                        <div>
+                          <dt className="text-base-content/60">
+                            Percentage
+                          </dt>
+                          <dd>
+                            {Number(attempt.percentage)}%
+                          </dd>
+                        </div>
+                      </dl>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          router.push(
+                            attempt.status ===
+                              'in_progress'
+                              ? `/quiz-attempts/${attempt.id}`
+                              : `/quiz-attempts/${attempt.id}/result`,
+                          )
+                        }
+                        className={`btn btn-sm w-full ${
+                          attempt.status ===
+                          'in_progress'
+                            ? 'btn-primary'
+                            : 'btn-outline'
+                        }`}
+                      >
+                        {attempt.status ===
+                        'in_progress'
+                          ? 'Continue'
+                          : 'View result'}
+                      </button>
+                    </div>
+                  </article>
+                ))}
+              </div>
+
+              <div className="hidden max-w-full overflow-x-auto rounded-box border border-base-300 bg-base-100 shadow md:block">
+              <table className="table min-w-[900px]">
                 <thead>
                   <tr>
                     <th>Quiz</th>
@@ -169,15 +271,15 @@ export default function HistoryPage() {
                       <td>
                         {attempt.status ===
                         'in_progress' ? (
-                          <span className="badge badge-warning">
+                          <span className="badge badge-warning whitespace-nowrap">
                             In progress
                           </span>
                         ) : attempt.isPassed ? (
-                          <span className="badge badge-success">
+                          <span className="badge badge-success whitespace-nowrap">
                             Passed
                           </span>
                         ) : (
-                          <span className="badge badge-error">
+                          <span className="badge badge-error whitespace-nowrap">
                             Failed
                           </span>
                         )}
@@ -212,7 +314,7 @@ export default function HistoryPage() {
                                 `/quiz-attempts/${attempt.id}`,
                               )
                             }
-                            className="btn btn-primary btn-sm"
+                            className="btn btn-primary btn-sm whitespace-nowrap"
                           >
                             Continue
                           </button>
@@ -224,7 +326,7 @@ export default function HistoryPage() {
                                 `/quiz-attempts/${attempt.id}/result`,
                               )
                             }
-                            className="btn btn-outline btn-sm"
+                            className="btn btn-outline btn-sm whitespace-nowrap"
                           >
                             View result
                           </button>
@@ -234,7 +336,8 @@ export default function HistoryPage() {
                   ))}
                 </tbody>
               </table>
-            </div>
+              </div>
+            </>
           )}
         </main>
       </div>
