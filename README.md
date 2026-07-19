@@ -26,6 +26,13 @@ npm run start:dev
 
 Backend: <http://localhost:3000>
 
+### บัญชีทดลอง
+
+```text
+Admin: admin1@example.com / 12345678
+Student: student1@example.com / 12345678
+```
+
 ## Frontend
 
 เปิด Terminal ใหม่:

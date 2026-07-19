@@ -6,24 +6,7 @@ import AppNavbar from '@/components/app-navbar';
 import AuthGuard from '@/components/auth-guard';
 import { apiFetch } from '@/lib/api';
 import { getErrorMessage } from '@/lib/get-error-message';
-
-interface QuizResult {
-  id?: number;
-  attemptId?: number;
-  score: string | number;
-  totalScore: string | number;
-  correctCount: number;
-  wrongCount: number;
-  percentage: string | number;
-  passingPercentage: string | number;
-  isPassed: boolean;
-  status?: string;
-  quiz?: {
-    id: number;
-    title: string;
-  };
-  quizTitle?: string;
-}
+import type { QuizResult } from '@/types/quiz-result';
 
 export default function QuizResultPage() {
   const params = useParams<{ attemptId: string }>();
@@ -184,6 +167,87 @@ export default function QuizResultPage() {
                     </div>
                   </div>
                 </div>
+
+                {result.review && result.review.length > 0 && (
+                  <section className="mt-6 w-full text-left">
+                    <h2 className="mb-4 text-xl font-bold">
+                      Answer review
+                    </h2>
+
+                    <div className="space-y-4">
+                      {result.review.map((item, questionIndex) => (
+                        <article
+                          key={item.questionId}
+                          className="rounded-box border border-base-300 bg-base-100 p-4"
+                        >
+                          <div className="flex items-start justify-between gap-3">
+                            <h3 className="font-semibold">
+                              {questionIndex + 1}. {item.questionText}
+                            </h3>
+
+                            <span
+                              className={`badge shrink-0 ${
+                                item.isCorrect
+                                  ? 'badge-success'
+                                  : 'badge-error'
+                              }`}
+                            >
+                              {item.isCorrect ? 'Correct' : 'Incorrect'}
+                            </span>
+                          </div>
+
+                          <div className="mt-3 space-y-2">
+                            {item.choices.map((choice, choiceIndex) => {
+                              const isCorrectChoice =
+                                choice.id === item.correctChoiceId;
+                              const isSelectedChoice =
+                                choice.id === item.selectedChoiceId;
+
+                              return (
+                                <div
+                                  key={choice.id}
+                                  className={`rounded-box border p-3 ${
+                                    isCorrectChoice
+                                      ? 'border-success bg-success/10'
+                                      : isSelectedChoice
+                                        ? 'border-error bg-error/10'
+                                        : 'border-base-300'
+                                  }`}
+                                >
+                                  <span className="font-medium">
+                                    {String.fromCharCode(65 + choiceIndex)}.
+                                  </span>{' '}
+                                  {choice.choiceText}
+
+                                  {isCorrectChoice && (
+                                    <span className="badge badge-success badge-sm ml-2">
+                                      Correct answer
+                                    </span>
+                                  )}
+
+                                  {isSelectedChoice && !isCorrectChoice && (
+                                    <span className="badge badge-error badge-sm ml-2">
+                                      Your answer
+                                    </span>
+                                  )}
+                                </div>
+                              );
+                            })}
+                          </div>
+
+                          {item.explanation && (
+                            <div className="mt-3 rounded-box bg-base-200 p-3 text-sm">
+                              <span className="font-semibold">
+                                Explanation:
+                              </span>{' '}
+                              {item.explanation}
+                            </div>
+                          )}
+                        </article>
+                      ))}
+                    </div>
+                  </section>
+                )}
 
                 <div className="card-actions mt-6 w-full justify-center">
                   <button

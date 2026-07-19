@@ -1,6 +1,12 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import {
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import AppNavbar from '@/components/app-navbar';
 import AuthGuard from '@/components/auth-guard';
@@ -8,20 +14,14 @@ import { apiFetch } from '@/lib/api';
 import type {
   StartAttemptResponse,
 } from '@/types/quiz';
+import type { QuizResult } from '@/types/quiz-result';
 import { getErrorMessage } from '@/lib/get-error-message';
 
-interface SubmitResult {
-  attemptId: number;
-  quizId: number;
-  quizTitle: string;
-  score: number;
-  totalScore: number;
-  correctCount: number;
-  wrongCount: number;
-  percentage: number;
-  passingPercentage: number;
-  isPassed: boolean;
-  submittedAt: string;
+function formatRemainingTime(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+
+  return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
 }
 
 export default function QuizAttemptPage() {
@@ -42,6 +42,11 @@ export default function QuizAttemptPage() {
 
   const [errorMessage, setErrorMessage] =
     useState('');
+
+  const [remainingSeconds, setRemainingSeconds] =
+    useState<number | null>(null);
+
+  const hasAutoSubmitted = useRef(false);
 
   useEffect(() => {
     async function loadAttemptData() {
@@ -85,6 +90,39 @@ export default function QuizAttemptPage() {
     void loadAttemptData();
   }, [attemptId, router]);
 
+  useEffect(() => {
+    if (!attemptData?.quiz.timeLimitMinutes) {
+      const resetTimerId = window.setTimeout(
+        () => setRemainingSeconds(null),
+        0,
+      );
+
+      return () => window.clearTimeout(resetTimerId);
+    }
+
+    const expiredAt =
+      new Date(attemptData.attempt.startedAt).getTime() +
+      attemptData.quiz.timeLimitMinutes * 60 * 1000;
+
+    function updateRemainingTime() {
+      setRemainingSeconds(
+        Math.max(
+          0,
+          Math.ceil((expiredAt - Date.now()) / 1000),
+        ),
+      );
+    }
+
+    updateRemainingTime();
+
+    const timerId = window.setInterval(
+      updateRemainingTime,
+      1000,
+    );
+
+    return () => window.clearInterval(timerId);
+  }, [attemptData]);
+
   const answeredCount = useMemo(
     () => Object.keys(answers).length,
     [answers],
@@ -100,22 +138,8 @@ export default function QuizAttemptPage() {
     }));
   }
 
-  async function handleSubmit() {
-    if (!attemptData) {
-      return;
-    }
-
-    const unansweredCount =
-      attemptData.quiz.questions.length -
-      answeredCount;
-
-    const shouldSubmit =
-      unansweredCount === 0 ||
-      window.confirm(
-        `You still have ${unansweredCount} unanswered question(s). Submit anyway?`,
-      );
-
-    if (!shouldSubmit) {
+  const submitQuiz = useCallback(async () => {
+    if (!attemptData || isSubmitting) {
       return;
     }
 
@@ -123,7 +147,7 @@ export default function QuizAttemptPage() {
     setErrorMessage('');
 
     try {
-      const result = await apiFetch<SubmitResult>(
+      const result = await apiFetch<QuizResult>(
         `/quiz-attempts/${attemptId}/submit`,
         {
           method: 'POST',
@@ -160,7 +184,43 @@ export default function QuizAttemptPage() {
     } finally {
       setIsSubmitting(false);
     }
+  }, [answers, attemptData, attemptId, isSubmitting, router]);
+
+  function handleSubmit() {
+    if (!attemptData || isSubmitting) {
+      return;
+    }
+
+    const unansweredCount =
+      attemptData.quiz.questions.length -
+      answeredCount;
+
+    const shouldSubmit =
+      unansweredCount === 0 ||
+      window.confirm(
+        `You still have ${unansweredCount} unanswered question(s). Submit anyway?`,
+      );
+
+    if (shouldSubmit) {
+      void submitQuiz();
+    }
   }
+
+  useEffect(() => {
+    if (
+      remainingSeconds !== 0 ||
+      !attemptData ||
+      isSubmitting ||
+      hasAutoSubmitted.current
+    ) {
+      return;
+    }
+
+    hasAutoSubmitted.current = true;
+    void submitQuiz();
+  }, [attemptData, isSubmitting, remainingSeconds, submitQuiz]);
+
+  const isTimeExpired = remainingSeconds === 0;
 
   if (!attemptData) {
     return (
@@ -194,9 +254,15 @@ export default function QuizAttemptPage() {
                   questions
                 </span>
 
-                <span className="badge badge-outline">
-                  {attemptData.quiz.timeLimitMinutes
-                    ? `${attemptData.quiz.timeLimitMinutes} minutes`
+                <span
+                  className={`badge ${
+                    remainingSeconds !== null && remainingSeconds <= 60
+                      ? 'badge-error'
+                      : 'badge-outline'
+                  }`}
+                >
+                  {remainingSeconds !== null
+                    ? `Time left ${formatRemainingTime(remainingSeconds)}`
                     : 'No time limit'}
                 </span>
 
@@ -214,6 +280,14 @@ export default function QuizAttemptPage() {
               className="alert alert-error mb-6"
             >
               <span>{errorMessage}</span>
+            </div>
+          )}
+
+          {isTimeExpired && isSubmitting && (
+            <div role="status" className="alert alert-warning mb-6">
+              <span>
+                Time is up. Your answers are being submitted automatically.
+              </span>
             </div>
           )}
 
@@ -246,7 +320,11 @@ export default function QuizAttemptPage() {
                         (choice, choiceIndex) => (
                           <label
                             key={choice.id}
-                            className="flex min-w-0 cursor-pointer items-start gap-3 rounded-box border border-base-300 p-3 transition hover:bg-base-200 sm:items-center sm:p-4"
+                            className={`flex min-w-0 items-start gap-3 rounded-box border border-base-300 p-3 transition sm:items-center sm:p-4 ${
+                              isTimeExpired || isSubmitting
+                                ? 'cursor-not-allowed opacity-70'
+                                : 'cursor-pointer hover:bg-base-200'
+                            }`}
                           >
                             <input
                               type="radio"
@@ -262,6 +340,7 @@ export default function QuizAttemptPage() {
                                   choice.id,
                                 )
                               }
+                              disabled={isTimeExpired || isSubmitting}
                               className="radio radio-primary"
                             />
 
@@ -296,7 +375,7 @@ export default function QuizAttemptPage() {
                 <button
                   type="button"
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isTimeExpired}
                   className="btn btn-primary w-full sm:w-auto"
                 >
                   {isSubmitting && (
@@ -305,7 +384,9 @@ export default function QuizAttemptPage() {
 
                   {isSubmitting
                     ? 'Submitting...'
-                    : 'Submit Quiz'}
+                    : isTimeExpired
+                      ? 'Time expired'
+                      : 'Submit Quiz'}
                 </button>
               </div>
             </div>
