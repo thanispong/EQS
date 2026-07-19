@@ -8,9 +8,43 @@ import {
 import { PrismaService } from '../prisma/prisma.service';
 import { SubmitQuizAttemptDto } from './dto/submit-quiz-attempt.dto';
 
+const SUBMISSION_GRACE_PERIOD_MS = 10_000;
+
 @Injectable()
 export class QuizAttemptsService {
   constructor(private readonly prisma: PrismaService) {}
+
+  private getAttemptExpiration(
+    startedAt: Date,
+    timeLimitMinutes: number | null,
+  ): Date | null {
+    if (timeLimitMinutes === null) {
+      return null;
+    }
+
+    return new Date(startedAt.getTime() + timeLimitMinutes * 60 * 1000);
+  }
+
+  private isPastSubmissionDeadline(expiredAt: Date | null): boolean {
+    return (
+      expiredAt !== null &&
+      Date.now() > expiredAt.getTime() + SUBMISSION_GRACE_PERIOD_MS
+    );
+  }
+
+  private expireAttempt(attemptId: number, expiredAt: Date) {
+    return this.prisma.quizAttempt.updateMany({
+      where: {
+        id: attemptId,
+        status: 'in_progress',
+      },
+      data: {
+        status: 'expired',
+        submittedAt: expiredAt,
+        isPassed: false,
+      },
+    });
+  }
 
   async start(quizId: number, userId: number) {
     const quiz = await this.prisma.quiz.findFirst({
@@ -102,9 +136,18 @@ export class QuizAttemptsService {
     });
 
     if (existingAttempt) {
-      throw new ConflictException(
-        'You already have an active attempt for this quiz',
+      const expiredAt = this.getAttemptExpiration(
+        existingAttempt.startedAt,
+        quiz.timeLimitMinutes,
       );
+
+      if (expiredAt && this.isPastSubmissionDeadline(expiredAt)) {
+        await this.expireAttempt(existingAttempt.id, expiredAt);
+      } else {
+        throw new ConflictException(
+          'You already have an active attempt for this quiz',
+        );
+      }
     }
 
     const totalScore = quiz.questions.reduce(
@@ -239,14 +282,14 @@ export class QuizAttemptsService {
       throw new BadRequestException('Quiz is no longer active');
     }
 
-    if (attempt.quiz.timeLimitMinutes !== null) {
-      const expiredAt = new Date(
-        attempt.startedAt.getTime() + attempt.quiz.timeLimitMinutes * 60 * 1000,
-      );
+    const expiredAt = this.getAttemptExpiration(
+      attempt.startedAt,
+      attempt.quiz.timeLimitMinutes,
+    );
 
-      if (new Date() > expiredAt) {
-        throw new BadRequestException('Quiz time limit has expired');
-      }
+    if (expiredAt && this.isPastSubmissionDeadline(expiredAt)) {
+      await this.expireAttempt(attempt.id, expiredAt);
+      throw new BadRequestException('Quiz time limit has expired');
     }
 
     const questions = attempt.quiz.questions;
@@ -642,6 +685,16 @@ export class QuizAttemptsService {
 
     if (!attempt.quiz.isActive) {
       throw new BadRequestException('Quiz is no longer active');
+    }
+
+    const expiredAt = this.getAttemptExpiration(
+      attempt.startedAt,
+      attempt.quiz.timeLimitMinutes,
+    );
+
+    if (expiredAt && this.isPastSubmissionDeadline(expiredAt)) {
+      await this.expireAttempt(attempt.id, expiredAt);
+      throw new BadRequestException('Quiz time limit has expired');
     }
 
     const totalScore = attempt.quiz.questions.reduce(
