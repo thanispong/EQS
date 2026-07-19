@@ -124,9 +124,6 @@ export default function HistoryPage() {
                           <h2 className="break-words font-bold">
                             {attempt.quiz.title}
                           </h2>
-                          <p className="text-xs text-base-content/60">
-                            Attempt #{attempt.id}
-                          </p>
                         </div>
 
                         {attempt.status ===
@@ -232,10 +229,6 @@ export default function HistoryPage() {
                       <td>
                         <div className="font-bold">
                           {attempt.quiz.title}
-                        </div>
-
-                        <div className="text-xs text-base-content/60">
-                          Attempt #{attempt.id}
                         </div>
                       </td>
 

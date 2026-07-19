@@ -3,6 +3,7 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
+import { Role } from '../auth/enums/role.enum';
 import { PrismaService } from '../prisma/prisma.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
 import { UpdateQuizDto } from './dto/update-quiz.dto';
@@ -80,7 +81,7 @@ export class QuizzesService {
     });
   }
 
-  findAll(topicId?: number) {
+  findAll(topicId: number | undefined, role: Role) {
     return this.prisma.quiz.findMany({
       where: {
         isActive: true,
@@ -92,6 +93,9 @@ export class QuizzesService {
         },
         ...(topicId !== undefined && {
           topicId,
+        }),
+        ...(role !== Role.Admin && {
+          status: QuizStatus.Published,
         }),
       },
       orderBy: [
@@ -136,11 +140,14 @@ export class QuizzesService {
     });
   }
 
-  async findOne(id: number) {
+  async findOne(id: number, role: Role) {
     const quiz = await this.prisma.quiz.findFirst({
       where: {
         id,
         isActive: true,
+        ...(role !== Role.Admin && {
+          status: QuizStatus.Published,
+        }),
         topic: {
           isActive: true,
           subject: {

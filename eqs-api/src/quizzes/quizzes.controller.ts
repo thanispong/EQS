@@ -27,6 +27,7 @@ export class QuizzesController {
 
   @Get()
   findAll(
+    @Req() request: AuthenticatedRequest,
     @Query(
       'topicId',
       new ParseIntPipe({
@@ -35,12 +36,15 @@ export class QuizzesController {
     )
     topicId?: number,
   ) {
-    return this.quizzesService.findAll(topicId);
+    return this.quizzesService.findAll(topicId, request.user.role as Role);
   }
 
   @Get(':id')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.quizzesService.findOne(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() request: AuthenticatedRequest,
+  ) {
+    return this.quizzesService.findOne(id, request.user.role as Role);
   }
 
   @Post()

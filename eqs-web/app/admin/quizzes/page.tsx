@@ -381,7 +381,7 @@ export default function AdminQuizzesPage() {
                       required
                       maxLength={200}
                       className="input input-bordered w-full"
-                      placeholder="Basic Algebra Quiz"
+                      // placeholder="Basic Algebra Quiz"
                     />
                   </fieldset>
 
