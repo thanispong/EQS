@@ -567,7 +567,7 @@ export default function AdminQuestionsPage() {
                         required
                         rows={4}
                         className="textarea textarea-bordered w-full"
-                        placeholder="Enter question text"
+                        // placeholder="Enter question text"
                       />
                     </fieldset>
 
@@ -585,7 +585,7 @@ export default function AdminQuestionsPage() {
                         }
                         rows={3}
                         className="textarea textarea-bordered w-full"
-                        placeholder="Optional explanation"
+                        // placeholder="Optional explanation"
                       />
                     </fieldset>
 
