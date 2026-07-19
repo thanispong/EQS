@@ -8,21 +8,8 @@ import { apiFetch } from '@/lib/api';
 import type {
   StartAttemptResponse,
 } from '@/types/quiz';
+import type { QuizResult } from '@/types/quiz-result';
 import { getErrorMessage } from '@/lib/get-error-message';
-
-interface SubmitResult {
-  attemptId: number;
-  quizId: number;
-  quizTitle: string;
-  score: number;
-  totalScore: number;
-  correctCount: number;
-  wrongCount: number;
-  percentage: number;
-  passingPercentage: number;
-  isPassed: boolean;
-  submittedAt: string;
-}
 
 export default function QuizAttemptPage() {
   const params = useParams<{ attemptId: string }>();
@@ -123,7 +110,7 @@ export default function QuizAttemptPage() {
     setErrorMessage('');
 
     try {
-      const result = await apiFetch<SubmitResult>(
+      const result = await apiFetch<QuizResult>(
         `/quiz-attempts/${attemptId}/submit`,
         {
           method: 'POST',

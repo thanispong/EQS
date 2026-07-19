@@ -469,6 +469,7 @@ export class QuizAttemptsService {
             id: true,
             title: true,
             passingPercentage: true,
+            isShowAnswer: true,
           },
         },
       },
@@ -482,7 +483,7 @@ export class QuizAttemptsService {
       throw new ForbiddenException('You cannot view another user attempt');
     }
 
-    return {
+    const result = {
       id: attempt.id,
       startedAt: attempt.startedAt,
       submittedAt: attempt.submittedAt,
@@ -498,6 +499,72 @@ export class QuizAttemptsService {
         id: attempt.quiz.id,
         title: attempt.quiz.title,
       },
+    };
+
+    if (!attempt.quiz.isShowAnswer || attempt.status !== 'submitted') {
+      return result;
+    }
+
+    const answers = await this.prisma.userAnswer.findMany({
+      where: {
+        quizAttemptId: attempt.id,
+      },
+      select: {
+        questionId: true,
+        selectedChoiceId: true,
+        isCorrect: true,
+        question: {
+          select: {
+            questionText: true,
+            explanation: true,
+            sortOrder: true,
+            choices: {
+              where: {
+                isActive: true,
+              },
+              orderBy: [
+                {
+                  sortOrder: 'asc',
+                },
+                {
+                  id: 'asc',
+                },
+              ],
+              select: {
+                id: true,
+                choiceText: true,
+                isCorrect: true,
+                sortOrder: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+    answers.sort(
+      (first, second) =>
+        first.question.sortOrder - second.question.sortOrder ||
+        first.questionId - second.questionId,
+    );
+
+    return {
+      ...result,
+      review: answers.map((answer) => ({
+        questionId: answer.questionId,
+        questionText: answer.question.questionText,
+        selectedChoiceId: answer.selectedChoiceId,
+        correctChoiceId:
+          answer.question.choices.find((choice) => choice.isCorrect)?.id ??
+          null,
+        isCorrect: answer.isCorrect ?? false,
+        explanation: answer.question.explanation,
+        choices: answer.question.choices.map((choice) => ({
+          id: choice.id,
+          choiceText: choice.choiceText,
+          sortOrder: choice.sortOrder,
+        })),
+      })),
     };
   }
 

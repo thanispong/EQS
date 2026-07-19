@@ -21,7 +21,8 @@ import { UpdateQuestionDto } from './dto/update-question.dto';
 import { QuestionsService } from './questions.service';
 
 @Controller('questions')
-@UseGuards(JwtAuthGuard)
+@UseGuards(JwtAuthGuard, RolesGuard)
+@Roles(Role.Admin)
 export class QuestionsController {
   constructor(private readonly questionsService: QuestionsService) {}
 
@@ -44,8 +45,6 @@ export class QuestionsController {
   }
 
   @Post()
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin)
   create(
     @Body() createQuestionDto: CreateQuestionDto,
     @Req() request: AuthenticatedRequest,
@@ -54,8 +53,6 @@ export class QuestionsController {
   }
 
   @Patch(':id')
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin)
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateQuestionDto: UpdateQuestionDto,
@@ -69,8 +66,6 @@ export class QuestionsController {
   }
 
   @Delete(':id')
-  @UseGuards(RolesGuard)
-  @Roles(Role.Admin)
   remove(
     @Param('id', ParseIntPipe) id: number,
     @Req() request: AuthenticatedRequest,

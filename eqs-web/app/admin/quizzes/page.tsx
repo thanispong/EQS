@@ -35,9 +35,8 @@ export default function AdminQuizzesPage() {
     useState('60');
   const [timeLimitMinutes, setTimeLimitMinutes] =
     useState('');
-  // const [isShowAnswer, setIsShowAnswer] =
-  //   useState(true);
-  const isShowAnswer = false;
+  const [isShowAnswer, setIsShowAnswer] =
+    useState(false);
   const [status, setStatus] = useState<
     'draft' | 'published'
   >('draft');
@@ -110,7 +109,7 @@ export default function AdminQuizzesPage() {
     setDescription('');
     setPassingPercentage('60');
     setTimeLimitMinutes('');
-    // setIsShowAnswer(true);
+    setIsShowAnswer(false);
     setStatus('draft');
   }
 
@@ -127,7 +126,7 @@ export default function AdminQuizzesPage() {
         ? String(quiz.timeLimitMinutes)
         : '',
     );
-    // setIsShowAnswer(quiz.isShowAnswer);
+    setIsShowAnswer(quiz.isShowAnswer);
     setStatus(quiz.status);
     setErrorMessage('');
     setSuccessMessage('');
@@ -469,7 +468,7 @@ export default function AdminQuizzesPage() {
                     </select>
                   </fieldset>
 
-                  {/* <label className="label cursor-pointer justify-start gap-3">
+                  <label className="label cursor-pointer justify-start gap-3">
                     <input
                       type="checkbox"
                       checked={isShowAnswer}
@@ -484,7 +483,7 @@ export default function AdminQuizzesPage() {
                     <span className="label-text">
                       Show answers after submission
                     </span>
-                  </label> */}
+                  </label>
 
                   <div className="flex gap-2">
                     <button
