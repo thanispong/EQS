@@ -78,6 +78,10 @@ export class AuthService {
         email: user.email,
         displayName: user.displayName,
         isActive: user.isActive,
+        role: {
+          id: user.role.id,
+          name: user.role.name,
+        },
       },
     };
   }

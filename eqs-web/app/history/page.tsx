@@ -181,7 +181,7 @@ export default function HistoryPage() {
                         )}
                       </td>
 
-                      <td>
+                      {/* <td>
                         {attempt.status ===
                         'submitted' ? (
                           <button
@@ -199,6 +199,33 @@ export default function HistoryPage() {
                           <span className="text-sm text-base-content/50">
                             Not submitted
                           </span>
+                        )}
+                      </td> */}
+                      <td>
+                        {attempt.status === 'in_progress' ? (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              router.push(
+                                `/quiz-attempts/${attempt.id}`,
+                              )
+                            }
+                            className="btn btn-primary btn-sm"
+                          >
+                            Continue
+                          </button>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() =>
+                              router.push(
+                                `/quiz-attempts/${attempt.id}/result`,
+                              )
+                            }
+                            className="btn btn-outline btn-sm"
+                          >
+                            View result
+                          </button>
                         )}
                       </td>
                     </tr>

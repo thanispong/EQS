@@ -34,7 +34,7 @@ export default function LoginPage() {
         },
       );
 
-      if (result.user.role === 'admin') {
+      if (result.user.role.name === 'admin') {
         router.push('/admin');
       } else {
         router.push('/quizzes');
